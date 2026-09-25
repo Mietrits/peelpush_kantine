@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VC Peelpush Kantine Scherm</title>
+    <!-- Tailwind CSS voor snelle en strakke styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .slide { display: none; }
+        .slide.active { display: flex; }
+        /* Peelpush huisstijl accenten */
+        .bg-peelpush-yellow { background-color: #ffd700; }
+        .text-peelpush-yellow { color: #ffd700; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white h-screen w-screen overflow-hidden flex flex-col justify-between p-12">
+
+    <!-- HEADER / LOGO BAR -->
+    <header class="flex justify-between items-center border-b border-zinc-800 pb-6">
+        <div class="flex items-center space-x-4">
+            <span class="text-4xl font-black tracking-wider text-peelpush-yellow">VC PEELPUSH</span>
+            <span class="text-zinc-500 text-xl">| Kantine Live Dashboard</span>
+        </div>
+        <div id="clock" class="text-2xl font-mono text-zinc-400"></div>
+    </header>
+
+    <!-- SLIDES CONTAINER (Groot middenstuk) -->
+    <main class="flex-grow relative flex items-center justify-center my-6">
+
+        <!-- SLIDE 1: Welkom -->
+        <div class="slide active flex-col items-center text-center space-y-6">
+            <h1 class="text-6xl font-extrabold text-peelpush-yellow">Welkom in de Peelpush Kantine! 💛🖤</h1>
+            <p class="text-2xl text-zinc-400 max-w-3xl">Geniet van de wedstrijd, de gezelligheid en een lekker drankje aan de bar.</p>
+        </div>
+
+        <!-- SLIDE 2: Programma & Uitslagen -->
+        <div class="slide flex-col w-full space-y-6">
+            <h2 class="text-4xl font-bold text-peelpush-yellow border-l-8 border-peelpush-yellow pl-4">📊 Programma & Uitslagen</h2>
+            <div class="grid grid-cols-2 gap-8 mt-4">
+                <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
+                    <h3 class="text-2xl font-semibold mb-4 text-white">🗓️ Thuiswedstrijden Komend Weekend</h3>
+                    <ul class="space-y-3 text-lg text-zinc-300">
+                        <li>• Zaterdag 14:00 | Peelpush Dames 1 vs Setup '35</li>
+                        <li>• Zaterdag 16:30 | Peelpush Heren 1 vs Ledûb</li>
+                        <li>• Zondag 13:00 | Peelpush Dames 4 vs Hovoc</li>
+                    </ul>
+                </div>
+                <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
+                    <h3 class="text-2xl font-semibold mb-4 text-white">🏆 Recente Uitslagen</h3>
+                    <ul class="space-y-3 text-lg text-zinc-300">
+                        <li>• Peelpush DS 1 - Rivo D. (3-1 W)</li>
+                        <li>• Peelpush DS 4 - Peelpush DS 5 (3-2 W)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: Prijslijst -->
+        <div class="slide flex-col w-full space-y-6">
+            <h2 class="text-4xl font-bold text-peelpush-yellow border-l-8 border-peelpush-yellow pl-4">🍻 Kantine Prijslijst</h2>
+            <div class="grid grid-cols-3 gap-6 mt-4">
+                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex justify-between items-center text-xl">
+                    <span>Koffie / Thee</span><span class="font-bold text-peelpush-yellow">€ 2,20</span>
+                </div>
+                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex justify-between items-center text-xl">
+                    <span>Frisdrank</span><span class="font-bold text-peelpush-yellow">€ 2,50</span>
+                </div>
+                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex justify-between items-center text-xl">
+                    <span>Bier / Wijn</span><span class="font-bold text-peelpush-yellow">€ 2,80</span>
+                </div>
+                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex justify-between items-center text-xl">
+                    <span>Tosti</span><span class="font-bold text-peelpush-yellow">€ 2,50</span>
+                </div>
+                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex justify-between items-center text-xl">
+                    <span>Bitterballen (6st)</span><span class="font-bold text-peelpush-yellow">€ 4,00</span>
+                </div>
+            </div>
+            <p class="text-center text-zinc-400 text-lg mt-2">💳 Pinnen heeft onze grote voorkeur! Alvast bedankt.</p>
+        </div>
+
+        <!-- SLIDE 4: Sponsoren -->
+        <div class="slide flex-col items-center text-center space-y-8">
+            <h2 class="text-4xl font-bold text-peelpush-yellow">🌟 Onze Hoofdsponsors & Partners</h2>
+            <div class="flex justify-center items-center space-x-12 mt-8">
+                <div class="bg-zinc-900 px-12 py-8 rounded-2xl text-2xl font-bold border border-zinc-800 text-zinc-300">Sponsor 1</div>
+                <div class="bg-zinc-900 px-12 py-8 rounded-2xl text-2xl font-bold border border-zinc-800 text-zinc-300">Sponsor 2</div>
+                <div class="bg-zinc-900 px-12 py-8 rounded-2xl text-2xl font-bold border border-zinc-800 text-zinc-300">Sponsor 3</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER / TICKER -->
+    <footer class="border-t border-zinc-800 pt-4 flex justify-between items-center text-zinc-400 text-lg">
+        <div>📢 <strong>Mededeling:</strong> Volgende week vrijdag is de maandelijkse club-borrel in de kantine!</div>
+        <div id="slide-counter" class="font-mono">Slide 1 / 4</div>
+    </footer>
+
+    <!-- JAVASCRIPT VOOR AUTOMATISCHE SLIDESHOW & KLOK -->
+    <script>
+        // Klok updaten
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Slideshow logica (elke 10 seconden wisselen)
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('slide-counter').innerText = `Slide ${currentSlide + 1} / ${totalSlides}`;
+        }
+
+        setInterval(nextSlide, 10000); // 10000 ms = 10 seconden per slide
+    </script>
+</body>
+</html>
