@@ -1,125 +1,472 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VC Peelpush Kantine Scherm</title>
-    <!-- Tailwind CSS voor snelle en strakke styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .slide { display: none; }
-        .slide.active { display: flex; }
-        /* Peelpush huisstijl accenten */
-        .bg-peelpush-yellow { background-color: #ffd700; }
-        .text-peelpush-yellow { color: #ffd700; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VC Peelpush — Kantinescherm</title>
+<link rel="icon" href="images/peelpush-logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+
+<!-- ================================================================
+     HANDLEIDING — lees dit voor je zelf dingen aanpast
+     ================================================================
+     FOTO VERVANGEN
+       Zet een nieuw bestand in de map "images" met DEZELFDE naam als
+       het bestand dat je wilt vervangen (bijv. images/mars.png).
+       Zodra je het bestand overschrijft, gebruikt de site 'm meteen —
+       je hoeft niets in deze HTML aan te passen.
+
+     TEKST VERANDEREN
+       Zoek de tekst gewoon op in het HTML-blok van de betreffende
+       slide hieronder en typ je eigen tekst erover heen. Elke slide
+       heeft een duidelijk begin- en eindcommentaar, bijv.:
+      (bijvoorbeeld: SLIDE 2 — Speler van de maand)
+
+     PAGINA KOPIËREN / TOEVOEGEN
+      Selecteer een heel blok van &lt;section class="slide ..."&gt; tot
+       en met de bijbehorende "</section>", kopieer het, en plak het
+       er nog een keer bij (vóór de sluitende "</div>" van #stage).
+       De slideshow telt automatisch hoeveel pagina's er zijn — een
+       nieuwe pagina verschijnt vanzelf mee in de rotatie, je hoeft
+       niets in de JavaScript aan te passen. Gebruik de "sponsor"-
+       slide als simpel sjabloon voor een pagina met alleen een
+       afbeelding, of de "speler-maand"-slide als sjabloon voor
+       tekst + foto.
+
+     WISSELTIJD AANPASSEN
+       Helemaal onderaan dit bestand: zoek "SLIDE_DURATION_MS".
+     ================================================================ -->
+
+<style>
+  :root{
+    --navy:        #002847;
+    --navy-deep:   #001a30;
+    --navy-light:  #0c3a63;
+    --gold:        #fdc300;
+    --gold-deep:   #d9a800;
+    --white:       #ffffff;
+    --muted:       rgba(255,255,255,.72);
+    --font-display:'Titan One', 'Poppins', sans-serif;
+    --font-body:   'Poppins', sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0; width:100%; height:100%;
+    background:var(--navy); overflow:hidden;
+    font-family:var(--font-body); color:var(--white);
+  }
+
+  #stage{ position:relative; width:100vw; height:100vh; }
+
+  .slide{
+    position:absolute; inset:0;
+    display:flex; opacity:0; visibility:hidden;
+    background:radial-gradient(120% 130% at 15% 10%, var(--navy-light) 0%, var(--navy) 45%, var(--navy-deep) 100%);
+    transform:scale(1.02);
+    transition:opacity .9s ease, transform 1.4s ease;
+  }
+  .slide.active{ opacity:1; visibility:visible; transform:scale(1); }
+
+  .title{
+    font-family:var(--font-display);
+    color:var(--gold);
+    text-transform:uppercase;
+    line-height:1.08;
+    letter-spacing:.5px;
+    text-shadow:0 2px 18px rgba(0,0,0,.35);
+  }
+
+  /* Voortgangsbalk onderaan: laat zien wanneer de volgende pagina komt */
+  #progress{ position:fixed; left:0; bottom:0; height:4px; width:0%; background:var(--gold); z-index:50; transition:none; }
+  #progress.run{ transition:width linear; }
+
+  .stroke{ position:absolute; pointer-events:none; z-index:0; }
+
+  /* ============================================================
+     SLIDE 1 — Welkom
+     ============================================================ */
+  .slide-welcome{ align-items:center; justify-content:center; }
+  .slide-welcome .stroke.s1{ top:-6vh; left:-10vw; width:34vw; }
+  .slide-welcome .stroke.s2{ top:16vh;  left:-16vw; width:26vw; opacity:.65; }
+  .slide-welcome .content{
+    position:relative; z-index:1; display:flex; flex-direction:column;
+    align-items:center; gap:2.2rem; text-align:center;
+  }
+  .slide-welcome .logo{ width:clamp(200px,20vw,340px); filter:drop-shadow(0 10px 30px rgba(0,0,0,.4)); }
+  .slide-welcome .title{ font-size:clamp(1.8rem,4.6vw,3.6rem); }
+  .slide-welcome .hero-player{
+    position:absolute; right:1vw; bottom:0; height:92vh; z-index:1;
+    filter:drop-shadow(0 20px 30px rgba(0,0,0,.45));
+  }
+
+  /* ============================================================
+     SLIDE 2 — Speler van de maand
+     ============================================================ */
+  .slide-speler{ align-items:center; justify-content:space-between; padding:6vh 7vw; gap:3vw; }
+  .slide-speler .text{ max-width:48%; position:relative; z-index:1; }
+  .slide-speler .eyebrow{ font-family:var(--font-display); color:var(--gold); text-transform:uppercase; font-size:clamp(1.3rem,2.7vw,2.2rem); line-height:1.15; }
+  .slide-speler .name{ font-family:var(--font-display); color:var(--white); text-transform:uppercase; font-size:clamp(1.5rem,3.2vw,2.6rem); margin-top:.3rem; }
+  .slide-speler .bio{ margin-top:1.8rem; color:var(--gold); font-size:clamp(1rem,1.6vw,1.4rem); line-height:1.55; max-width:34ch; }
+  .slide-speler .photo{ height:92vh; flex-shrink:0; filter:drop-shadow(0 20px 30px rgba(0,0,0,.45)); }
+
+  /* ============================================================
+     SLIDE 3 & 8 — Programma / Uitslagen (RSS)
+     ============================================================ */
+  .slide-feed{ flex-direction:column; padding:6vh 7vw; gap:2.2rem; }
+  .slide-feed .head{ display:flex; align-items:baseline; justify-content:space-between; }
+  .slide-feed .title{ font-size:clamp(1.8rem,4vw,3.2rem); }
+  .slide-feed .club{ color:var(--muted); font-size:clamp(.85rem,1.2vw,1.05rem); font-weight:600; letter-spacing:.5px; }
+  .feed-list{ display:flex; flex-direction:column; gap:.9rem; overflow:hidden; }
+  .feed-row{
+    display:flex; gap:2rem; align-items:center;
+    background:rgba(255,255,255,.06); border-left:5px solid var(--gold);
+    border-radius:12px; padding:1.1rem 1.5rem;
+  }
+  .feed-date{ flex:0 0 auto; min-width:9.5rem; color:var(--gold); font-weight:700; font-size:clamp(.9rem,1.4vw,1.2rem); text-transform:capitalize; }
+  .feed-title{ font-weight:600; font-size:clamp(1rem,1.6vw,1.4rem); }
+  .feed-desc{ color:var(--muted); font-size:clamp(.85rem,1.2vw,1.05rem); margin-top:.25rem; }
+  .feed-empty{ color:var(--muted); font-size:clamp(1rem,1.6vw,1.3rem); font-style:italic; }
+
+  /* ============================================================
+     SLIDE 4 — Sponsor
+     ============================================================ */
+  .slide-sponsor{ flex-direction:column; align-items:center; justify-content:center; gap:1.6rem; }
+  .slide-sponsor .logo{ width:clamp(280px,38vw,600px); filter:drop-shadow(0 10px 30px rgba(0,0,0,.35)); }
+  .slide-sponsor .caption{ color:var(--gold); letter-spacing:1px; text-transform:uppercase; font-weight:600; font-size:clamp(.85rem,1.2vw,1.1rem); }
+
+  /* ============================================================
+     SLIDE 5 — Promo product (zoals het originele ontwerp:
+     titel bovenaan, cirkel + producten gecentreerd, verfstreep
+     rechtsonder in de hoek)
+     ============================================================ */
+  .slide-promo{ position:relative; flex-direction:column; align-items:center; justify-content:center; gap:5vh; overflow:hidden; }
+  .slide-promo .stroke.s1{ bottom:-8vh; right:-10vw; width:34vw; transform:rotate(180deg); }
+  .slide-promo .stroke.s2{ bottom:14vh; right:-16vw; width:26vw; opacity:.65; transform:rotate(180deg); }
+  .slide-promo .title{ position:relative; z-index:1; font-size:clamp(1.6rem,3.4vw,2.8rem); text-align:center; }
+  .slide-promo .visual{ position:relative; z-index:1; display:flex; align-items:center; justify-content:center; }
+  .price-circle{
+    flex:0 0 auto; width:clamp(160px,17vw,230px); height:clamp(160px,17vw,230px);
+    border-radius:50%; background:var(--gold); color:var(--navy-deep);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-size:clamp(1.6rem,3vw,2.4rem);
+    box-shadow:0 15px 40px rgba(0,0,0,.35);
+    position:relative; z-index:2;
+  }
+  .slide-promo .products{ display:flex; align-items:center; margin-left:-2.5rem; }
+  .slide-promo .products img{ filter:drop-shadow(0 15px 25px rgba(0,0,0,.4)); }
+  .slide-promo .products .mars{ height:clamp(200px,30vh,340px); position:relative; z-index:1; }
+  .slide-promo .products .drink{ height:clamp(220px,34vh,380px); margin-left:-1.5rem; position:relative; z-index:0; }
+
+  /* ============================================================
+     SLIDE 6 — Oktoberfest poster
+     ============================================================ */
+  .slide-oktoberfest{ align-items:center; justify-content:center; }
+  .poster-card{
+    position:relative; height:88vh; aspect-ratio:4/5; border-radius:20px;
+    overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.55);
+    border:3px solid var(--gold);
+  }
+  .poster-card img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  /* ============================================================
+     SLIDE 7 — Volg ons (kolommen met gelijke breedte, zodat het
+     geheel visueel netjes gecentreerd blijft ongeacht tekstlengte)
+     ============================================================ */
+  .slide-social{ flex-direction:column; align-items:center; justify-content:center; gap:4.5rem; }
+  .slide-social .title{ font-size:clamp(1.6rem,3.4vw,2.6rem); }
+  .social-icons{ display:flex; justify-content:center; gap:clamp(1.5rem,4vw,4rem); }
+  .social-item{
+    display:flex; flex-direction:column; align-items:center; gap:1rem;
+    width:clamp(220px,20vw,300px); text-align:center;
+  }
+  .social-item svg{ width:clamp(70px,7vw,110px); height:clamp(70px,7vw,110px); filter:drop-shadow(0 8px 18px rgba(0,0,0,.35)); }
+  .social-item span{ color:var(--gold); font-size:clamp(1rem,1.5vw,1.35rem); font-weight:600; line-height:1.3; }
+
+  @media (max-width:900px){
+    .slide-speler{ flex-direction:column-reverse; text-align:center; }
+    .slide-speler .text{ max-width:100%; }
+    .slide-speler .photo{ height:44vh; }
+    .social-icons{ flex-direction:column; align-items:center; gap:2rem; }
+    .slide-promo .visual{ flex-direction:column; }
+    .slide-promo .products{ margin-left:0; }
+  }
+</style>
 </head>
-<body class="bg-zinc-950 text-white h-screen w-screen overflow-hidden flex flex-col justify-between p-12">
+<body>
 
-    <!-- HEADER / LOGO BAR -->
-    <header class="flex justify-between items-center border-b border-zinc-800 pb-6">
-        <div class="flex items-center space-x-4">
-            <span class="text-4xl font-black tracking-wider text-peelpush-yellow">VC PEELPUSH</span>
-            <span class="text-zinc-500 text-xl">| Kantine Live Dashboard</span>
-        </div>
-        <div id="clock" class="text-2xl font-mono text-zinc-400"></div>
-    </header>
+<div id="progress"></div>
+<div id="stage">
 
-    <!-- SLIDES CONTAINER (Groot middenstuk) -->
-    <main class="flex-grow relative flex items-center justify-center my-6">
+  <!-- ============ SLIDE 1 — Welkom ============ -->
+  <section class="slide slide-welcome active">
+    <img class="stroke s1" src="images/verfstreep.png" alt="">
+    <img class="stroke s2" src="images/verfstreep.png" alt="">
+    <div class="content">
+      <img class="logo" src="images/peelpush-logo.png" alt="Logo VC Peelpush">
+      <h1 class="title">Welkom bij VC Peelpush!</h1>
+    </div>
+    <img class="hero-player" src="images/welkom-speler.png" alt="Speler in actie">
+  </section>
 
-        <!-- SLIDE 1: Welkom -->
-        <div class="slide active flex-col items-center text-center space-y-6">
-            <h1 class="text-6xl font-extrabold text-peelpush-yellow">Welkom in de Peelpush Kantine! 💛🖤</h1>
-            <p class="text-2xl text-zinc-400 max-w-3xl">Geniet van de wedstrijd, de gezelligheid en een lekker drankje aan de bar.</p>
-        </div>
+  <!-- ============ SLIDE 2 — Speler van de maand ============ -->
+  <!-- Pas naam / tekst hieronder maandelijks aan. Foto vervangen:
+       zet een nieuw bestand in images/speler-van-de-maand.png -->
+  <section class="slide slide-speler">
+    <div class="text">
+      <div class="eyebrow">Speler van de maand</div>
+      <div class="name">Gitte Janssen</div>
+      <p class="bio">Gitte speelt in dames 3 en is de zus van Wessel. Oom Peter zit ook bij Peelpush, leuk hè!</p>
+    </div>
+    <img class="photo" src="images/speler-van-de-maand.png" alt="Gitte Janssen">
+  </section>
 
-        <!-- SLIDE 2: Programma & Uitslagen -->
-        <div class="slide flex-col w-full space-y-6">
-            <h2 class="text-4xl font-bold text-peelpush-yellow border-l-8 border-peelpush-yellow pl-4">📊 Programma & Uitslagen</h2>
-            <div class="grid grid-cols-2 gap-8 mt-4">
-                <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
-                    <h3 class="text-2xl font-semibold mb-4 text-white">🗓️ Thuiswedstrijden Komend Weekend</h3>
-                    <ul class="space-y-3 text-lg text-zinc-300">
-                        <li>• Zaterdag 14:00 | Peelpush Dames 1 vs Setup '35</li>
-                        <li>• Zaterdag 16:30 | Peelpush Heren 1 vs Ledûb</li>
-                        <li>• Zondag 13:00 | Peelpush Dames 4 vs Hovoc</li>
-                    </ul>
-                </div>
-                <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
-                    <h3 class="text-2xl font-semibold mb-4 text-white">🏆 Recente Uitslagen</h3>
-                    <ul class="space-y-3 text-lg text-zinc-300">
-                        <li>• Peelpush DS 1 - Rivo D. (3-1 W)</li>
-                        <li>• Peelpush DS 4 - Peelpush DS 5 (3-2 W)</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+  <!-- ============ SLIDE 3 — Programma (RSS, automatisch) ============ -->
+  <section class="slide slide-feed">
+    <div class="head">
+      <h2 class="title">Programma</h2>
+      <span class="club">VC Peelpush</span>
+    </div>
+    <div class="feed-list" id="programma-list">
+      <p class="feed-empty">Programma laden…</p>
+    </div>
+  </section>
 
-        <!-- SLIDE 3: Prijslijst -->
-        <div class="slide flex-col w-full space-y-6">
-            <h2 class="text-4xl font-bold text-peelpush-yellow border-l-8 border-peelpush-yellow pl-4">🍻 Kantine Prijslijst</h2>
-            <div class="grid grid-cols-3 gap-6 mt-4">
-                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex justify-between items-center text-xl">
-                    <span>Koffie / Thee</span><span class="font-bold text-peelpush-yellow">€ 2,20</span>
-                </div>
-                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex justify-between items-center text-xl">
-                    <span>Frisdrank</span><span class="font-bold text-peelpush-yellow">€ 2,50</span>
-                </div>
-                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex justify-between items-center text-xl">
-                    <span>Bier / Wijn</span><span class="font-bold text-peelpush-yellow">€ 2,80</span>
-                </div>
-                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex justify-between items-center text-xl">
-                    <span>Tosti</span><span class="font-bold text-peelpush-yellow">€ 2,50</span>
-                </div>
-                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex justify-between items-center text-xl">
-                    <span>Bitterballen (6st)</span><span class="font-bold text-peelpush-yellow">€ 4,00</span>
-                </div>
-            </div>
-            <p class="text-center text-zinc-400 text-lg mt-2">💳 Pinnen heeft onze grote voorkeur! Alvast bedankt.</p>
-        </div>
+  <!-- ============ SLIDE 4 — Sponsor ============ -->
+  <section class="slide slide-sponsor">
+    <img class="logo" src="images/sponsor-heere-van-meijel.png" alt="Logo De Heere van Meijel">
+    <div class="caption">Trotse sponsor van VC Peelpush</div>
+  </section>
 
-        <!-- SLIDE 4: Sponsoren -->
-        <div class="slide flex-col items-center text-center space-y-8">
-            <h2 class="text-4xl font-bold text-peelpush-yellow">🌟 Onze Hoofdsponsors & Partners</h2>
-            <div class="flex justify-center items-center space-x-12 mt-8">
-                <div class="bg-zinc-900 px-12 py-8 rounded-2xl text-2xl font-bold border border-zinc-800 text-zinc-300">Sponsor 1</div>
-                <div class="bg-zinc-900 px-12 py-8 rounded-2xl text-2xl font-bold border border-zinc-800 text-zinc-300">Sponsor 2</div>
-                <div class="bg-zinc-900 px-12 py-8 rounded-2xl text-2xl font-bold border border-zinc-800 text-zinc-300">Sponsor 3</div>
-            </div>
-        </div>
+  <!-- ============ SLIDE 5 — Promo product ============ -->
+  <!-- Pas prijs hieronder aan (zoek "€3,75"). Producten vervangen:
+       images/mars.png en images/aa-drink.png -->
+  <section class="slide slide-promo">
+    <img class="stroke s1" src="images/verfstreep.png" alt="">
+    <img class="stroke s2" src="images/verfstreep.png" alt="">
+    <h2 class="title">Heb je dit al geprobeerd?</h2>
+    <div class="visual">
+      <div class="price-circle">€3,75</div>
+      <div class="products">
+        <img class="mars" src="images/mars.png" alt="Mars">
+        <img class="drink" src="images/aa-drink.png" alt="AA Drink">
+      </div>
+    </div>
+  </section>
 
-    </main>
+  <!-- ============ SLIDE 6 — Oktoberfest poster ============ -->
+  <!-- Nieuw evenement? Vervang images/oktoberfest-poster.jpg door
+       een nieuwe posterafbeelding (met tekst er al in verwerkt). -->
+  <section class="slide slide-oktoberfest">
+    <div class="poster-card">
+      <img src="images/oktoberfest-poster.jpg" alt="Peelpush Oktoberfest — za 31 okt, 21:00, De Körref">
+    </div>
+  </section>
 
-    <!-- FOOTER / TICKER -->
-    <footer class="border-t border-zinc-800 pt-4 flex justify-between items-center text-zinc-400 text-lg">
-        <div>📢 <strong>Mededeling:</strong> Volgende week vrijdag is de maandelijkse club-borrel in de kantine!</div>
-        <div id="slide-counter" class="font-mono">Slide 1 / 4</div>
-    </footer>
+  <!-- ============ SLIDE 7 — Volg ons ============ -->
+  <section class="slide slide-social">
+    <h2 class="title">Volg ons:</h2>
+    <div class="social-icons">
+      <div class="social-item">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="6" fill="url(#ig-grad)"/><rect x="6.5" y="6.5" width="11" height="11" rx="3.5" stroke="white" stroke-width="1.6"/><circle cx="12" cy="12" r="3.2" stroke="white" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.1" fill="white"/><defs><linearGradient id="ig-grad" x1="0" y1="24" x2="24" y2="0"><stop stop-color="#FEE411"/><stop offset=".35" stop-color="#FD5949"/><stop offset=".65" stop-color="#D6249F"/><stop offset="1" stop-color="#285AEB"/></linearGradient></defs></svg>
+        <span>@VC Peelpush</span>
+      </div>
+      <div class="social-item">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#1877F2"/><path d="M14.5 8.4h1.5V5.9h-1.9c-2.1 0-3.3 1.3-3.3 3.4v1.6H8.6v2.6h2.2V19h2.7v-5.5h2l.4-2.6h-2.4V9.6c0-.7.3-1.2 1-1.2z" fill="white"/></svg>
+        <span>@Peelpush Volleybalvereniging</span>
+      </div>
+    </div>
+  </section>
 
-    <!-- JAVASCRIPT VOOR AUTOMATISCHE SLIDESHOW & KLOK -->
-    <script>
-        // Klok updaten
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+  <!-- ============ SLIDE 8 — Uitslagen (RSS, automatisch) ============ -->
+  <section class="slide slide-feed">
+    <div class="head">
+      <h2 class="title">Uitslagen</h2>
+      <span class="club">VC Peelpush</span>
+    </div>
+    <div class="feed-list" id="uitslagen-list">
+      <p class="feed-empty">Uitslagen laden…</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ================================================================
+   INSTELLINGEN
+   ================================================================ */
+const SLIDE_DURATION_MS   = 10000;                 // 10 seconden per pagina
+const PROGRAMMA_RSS_URL   = 'https://api.nevobo.nl/export/vereniging/CKM0K9W/programma.rss';
+const UITSLAGEN_RSS_URL   = 'https://api.nevobo.nl/export/vereniging/CKM0K9W/resultaten.rss';
+const FEED_REFRESH_MS     = 15 * 60 * 1000;        // ververs elke 15 min
+const MAX_FEED_ITEMS      = 6;
+const FETCH_TIMEOUT_MS    = 7000;
+
+/* ================================================================
+   SLIDESHOW + voortgangsbalk
+   ================================================================ */
+const slides = document.querySelectorAll('.slide');
+const progressEl = document.getElementById('progress');
+let currentSlide = 0;
+
+function runProgressBar(){
+  progressEl.classList.remove('run');
+  progressEl.style.width = '0%';
+  void progressEl.offsetWidth; // forceer reflow zodat de animatie herstart
+  progressEl.classList.add('run');
+  progressEl.style.transitionDuration = SLIDE_DURATION_MS + 'ms';
+  progressEl.style.width = '100%';
+}
+
+function showSlide(i){
+  slides.forEach(s => s.classList.remove('active'));
+  slides[i].classList.add('active');
+  runProgressBar();
+}
+
+showSlide(0);
+setInterval(() => {
+  currentSlide = (currentSlide + 1) % slides.length;
+  showSlide(currentSlide);
+}, SLIDE_DURATION_MS);
+
+/* ================================================================
+   RSS-FEEDS: programma & uitslagen
+   De Nevobo-feeds zijn oorspronkelijk bedoeld voor server-side
+   gebruik (PHP) en sturen waarschijnlijk geen CORS-headers mee.
+   Daarom proberen we hieronder eerst rechtstreeks, en anders via
+   een paar verschillende publieke CORS-proxy's op rij.
+   ================================================================ */
+const FETCH_STRATEGIES = [
+  url => ({
+    format: 'json',
+    url: 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(url)
+  }),
+  url => ({ format: 'xml', url }),
+  url => ({
+    format: 'xml',
+    url: 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url)
+  }),
+  url => ({
+    format: 'xml',
+    url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url)
+  }),
+];
+
+function fetchWithTimeout(url, ms){
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  return fetch(url, { cache:'no-store', signal: controller.signal }).finally(() => clearTimeout(timer));
+}
+
+async function fetchFeed(url){
+  let lastError = null;
+  for(const strategy of FETCH_STRATEGIES){
+    const target = strategy(url);
+    try{
+      const res = await fetchWithTimeout(target.url, FETCH_TIMEOUT_MS);
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      if(!text || text.length < 20) throw new Error('Leeg antwoord');
+      if(target.format === 'json'){
+        const json = JSON.parse(text);
+        if(json.status !== 'ok' || !json.feed || !Array.isArray(json.items)){
+          throw new Error('Ongeldig RSS-antwoord');
         }
-        setInterval(updateClock, 1000);
-        updateClock();
+        return { format: 'json', items: json.items };
+      }
+      return { format: 'xml', text };
+    }catch(err){
+      lastError = err;
+    }
+  }
+  throw lastError || new Error('Alle pogingen om de feed op te halen zijn mislukt');
+}
 
-        // Slideshow logica (elke 10 seconden wisselen)
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
+function firstText(item, selectors){
+  for(const sel of selectors){
+    let node = null;
+    try{ node = item.querySelector(sel); }catch(e){ /* ongeldige selector overslaan */ }
+    if(node && node.textContent && node.textContent.trim()) return node.textContent.trim();
+  }
+  return '';
+}
 
-        function nextSlide() {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % totalSlides;
-            slides[currentSlide].classList.add('active');
-            document.getElementById('slide-counter').innerText = `Slide ${currentSlide + 1} / ${totalSlides}`;
-        }
+function parseFeed(feed){
+  if(feed.format === 'json'){
+    return feed.items.map(item => ({
+      title: item.title || '',
+      description: (item.description || '').replace(/<[^>]+>/g, '').trim(),
+      pubDate: item.pubDate || item.pubdate || ''
+    }));
+  }
+  const xmlText = feed.text;
+  const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
+  if(doc.querySelector('parsererror')) throw new Error('Kon de feed niet lezen (ongeldige XML)');
+  // Ondersteunt zowel RSS 2.0 (<item>) als Atom (<entry>)
+  const nodes = Array.from(doc.querySelectorAll('item, entry'));
+  return nodes.map(item => ({
+    title:       firstText(item, ['title']),
+    description: firstText(item, ['description', 'summary', 'content']).replace(/<[^>]+>/g, '').trim(),
+    pubDate:     firstText(item, ['pubDate', 'published', 'updated'])
+  }));
+}
 
-        setInterval(nextSlide, 10000); // 10000 ms = 10 seconden per slide
-    </script>
+function formatDate(pubDateStr){
+  const d = new Date(pubDateStr);
+  if(isNaN(d)) return pubDateStr;
+  const datum = d.toLocaleDateString('nl-NL', { weekday:'short', day:'numeric', month:'short' });
+  const tijd  = d.toLocaleTimeString('nl-NL', { hour:'2-digit', minute:'2-digit' });
+  return `${datum} · ${tijd}`;
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function renderFeed(containerId, items, emptyMessage){
+  const el = document.getElementById(containerId);
+  if(!items.length){
+    el.innerHTML = `<p class="feed-empty">${emptyMessage}</p>`;
+    return;
+  }
+  el.innerHTML = items.slice(0, MAX_FEED_ITEMS).map(it => `
+    <div class="feed-row">
+      <div class="feed-date">${it.pubDate ? formatDate(it.pubDate) : ''}</div>
+      <div>
+        <div class="feed-title">${escapeHtml(it.title)}</div>
+        ${it.description ? `<div class="feed-desc">${escapeHtml(it.description)}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function loadFeed(url, containerId, emptyMessage, errorMessage){
+  try{
+    const items = parseFeed(await fetchFeed(url));
+    renderFeed(containerId, items, emptyMessage);
+  }catch(err){
+    console.error(containerId, 'laden mislukt:', err);
+    document.getElementById(containerId).innerHTML = `<p class="feed-empty">${errorMessage}</p>`;
+  }
+}
+
+function loadProgramma(){
+  loadFeed(PROGRAMMA_RSS_URL, 'programma-list', 'Geen aankomende wedstrijden gevonden.', 'Programma kon tijdelijk niet geladen worden.');
+}
+function loadUitslagen(){
+  loadFeed(UITSLAGEN_RSS_URL, 'uitslagen-list', 'Geen recente uitslagen gevonden.', 'Uitslagen konden tijdelijk niet geladen worden.');
+}
+
+loadProgramma();
+loadUitslagen();
+setInterval(loadProgramma, FEED_REFRESH_MS);
+setInterval(loadUitslagen, FEED_REFRESH_MS);
+</script>
 </body>
 </html>
