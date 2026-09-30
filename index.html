@@ -186,7 +186,6 @@
   .social-item svg{ width:clamp(70px,7vw,110px); height:clamp(70px,7vw,110px); filter:drop-shadow(0 8px 18px rgba(0,0,0,.35)); }
   .social-item span{ color:var(--gold); font-size:clamp(1rem,1.5vw,1.35rem); font-weight:600; line-height:1.3; }
 
-<<<<<<< HEAD
   .slide-event{align-items:center;justify-content:space-between;padding:5vh 7vw;gap:5vw;}
   .event-copy{max-width:48%;z-index:1;}
   .eyebrow{font-family:var(--font-display);color:var(--gold);font-size:clamp(1.2rem,2.4vw,2rem);text-transform:uppercase;}
@@ -196,9 +195,8 @@
   .event-details strong{background:var(--gold);color:var(--navy-deep);padding:.65rem 1rem;border-radius:10px;font-size:clamp(.9rem,1.4vw,1.2rem);}
   .event-poster{height:82vh;max-width:47%;border:3px solid var(--gold);border-radius:20px;overflow:hidden;box-shadow:0 25px 70px rgba(0,0,0,.5);}
   .event-poster img{width:100%;height:100%;object-fit:cover;display:block;}
-  .slide-sponsor{gap:1.4rem;}
-  .slide-sponsor .sponsor-label{position:static;}
-  .slide-sponsor .sponsor-logo{width:clamp(280px,60vw,780px);max-height:62vh;object-fit:contain;filter:drop-shadow(0 12px 30px rgba(0,0,0,.4));}
+  .slide-sponsor{position:absolute;inset:0;}
+  .slide-sponsor .sponsor-logo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:clamp(280px,46vw,700px);max-height:48vh;object-fit:contain;filter:drop-shadow(0 12px 30px rgba(0,0,0,.4));}
   .slide-vacature .vacature-content{width:min(1100px,90vw);}
   .vacature-bottom{display:flex;align-items:center;justify-content:center;gap:4vw;margin-top:2rem;}
   .qr-wrap{display:flex;flex-direction:column;align-items:center;gap:.55rem;background:white;padding:.7rem;border-radius:14px;box-shadow:0 15px 40px rgba(0,0,0,.35);}
@@ -207,9 +205,9 @@
   .dm-card{padding:4vh 7vw;display:flex;flex-direction:column;align-items:center;}
   .dm-logo{width:clamp(130px,16vw,220px);max-height:24vh;object-fit:contain;margin-bottom:1rem;}
 
-  .sponsor-label{position:absolute;top:11vh;color:var(--gold);text-transform:uppercase;font-weight:700;letter-spacing:1px;font-size:clamp(1rem,1.55vw,1.3rem);}
+  .sponsor-label{position:absolute;top:11vh;color:var(--gold);text-transform:uppercase;font-weight:700;letter-spacing:1px;font-size:clamp(.9rem,1.4vw,1.2rem);}
   .sponsor-logo{width:clamp(280px,42vw,650px);max-height:42vh;object-fit:contain;filter:drop-shadow(0 12px 30px rgba(0,0,0,.4));}
-  .sponsor-text{color:var(--muted);font-size:clamp(1rem,1.5vw,1.25rem);}
+  .sponsor-text{position:absolute;bottom:11vh;left:0;width:100%;color:var(--muted);font-size:clamp(1rem,1.5vw,1.25rem);text-align:center;}
   .slide-vacature{align-items:center;justify-content:center;text-align:center;padding:6vh 7vw;}
   .vacature-content{max-width:1000px;}
   .vacature-content .title{font-size:clamp(2.2rem,5vw,4.7rem);margin:.7rem 0 1rem;}
@@ -229,15 +227,6 @@
     .vacature-points{flex-direction:column;}
     .vacature-bottom{flex-direction:column;gap:1.5rem;}
     .dm-logo{width:130px;max-height:18vh;}
-=======
-  @media (max-width:900px){
-    .slide-speler{ flex-direction:column-reverse; text-align:center; }
-    .slide-speler .text{ max-width:100%; }
-    .slide-speler .photo{ height:44vh; }
-    .social-icons{ flex-direction:column; align-items:center; gap:2rem; }
-    .slide-promo .visual{ flex-direction:column; }
-    .slide-promo .products{ margin-left:0; }
->>>>>>> bd6b6394e48cc737ad87ac8c7dc83bc443e6e530
   }
 </style>
 </head>
@@ -257,7 +246,6 @@
     <img class="hero-player" src="images/welkom-speler.png" alt="Speler in actie">
   </section>
 
-<<<<<<< HEAD
   <!-- ============ SLIDE 2 — BOS evenement ============ -->
   <section class="slide slide-event">
     <div class="event-copy">
@@ -295,54 +283,10 @@
           <img class="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fwww.peelpush.nl" alt="QR-code naar www.peelpush.nl">
           <span>Scan voor meer informatie</span>
         </div>
-=======
-  <!-- ============ SLIDE 2 — Speler van de maand ============ -->
-  <!-- Pas naam / tekst hieronder maandelijks aan. Foto vervangen:
-       zet een nieuw bestand in images/speler-van-de-maand.png -->
-  <section class="slide slide-speler">
-    <div class="text">
-      <div class="eyebrow">Speler van de maand</div>
-      <div class="name">Gitte Janssen</div>
-      <p class="bio">Gitte speelt in dames 3 en is de zus van Wessel. Oom Peter zit ook bij Peelpush, leuk hè!</p>
-    </div>
-    <img class="photo" src="images/speler-van-de-maand.png" alt="Gitte Janssen">
-  </section>
-
-  <!-- ============ SLIDE 3 — Programma (RSS, automatisch) ============ -->
-  <section class="slide slide-feed">
-    <div class="head">
-      <h2 class="title">Programma</h2>
-      <span class="club">VC Peelpush</span>
-    </div>
-    <div class="feed-list" id="programma-list">
-      <p class="feed-empty">Programma laden…</p>
-    </div>
-  </section>
-
-  <!-- ============ SLIDE 4 — Sponsor ============ -->
-  <section class="slide slide-sponsor">
-    <img class="logo" src="images/sponsor-heere-van-meijel.png" alt="Logo De Heere van Meijel">
-    <div class="caption">Trotse sponsor van VC Peelpush</div>
-  </section>
-
-  <!-- ============ SLIDE 5 — Promo product ============ -->
-  <!-- Pas prijs hieronder aan (zoek "€3,75"). Producten vervangen:
-       images/mars.png en images/aa-drink.png -->
-  <section class="slide slide-promo">
-    <img class="stroke s1" src="images/verfstreep.png" alt="">
-    <img class="stroke s2" src="images/verfstreep.png" alt="">
-    <h2 class="title">Heb je dit al geprobeerd?</h2>
-    <div class="visual">
-      <div class="price-circle">€3,75</div>
-      <div class="products">
-        <img class="mars" src="images/mars.png" alt="Mars">
-        <img class="drink" src="images/aa-drink.png" alt="AA Drink">
->>>>>>> bd6b6394e48cc737ad87ac8c7dc83bc443e6e530
       </div>
     </div>
   </section>
 
-<<<<<<< HEAD
   <!-- ============ SLIDE 5 — Dikke Mik ============ -->
   <section class="slide slide-dikkemik">
     <div class="dm-card">
@@ -351,47 +295,12 @@
       <h2 class="title">Vier je verjaardag<br>bij Dikke Mik!</h2>
       <div class="discount">10% KORTING</div>
       <p>Op je verjaardag krijg je bij Dikke Mik 10% korting.</p>
-=======
-  <!-- ============ SLIDE 6 — Oktoberfest poster ============ -->
-  <!-- Nieuw evenement? Vervang images/oktoberfest-poster.jpg door
-       een nieuwe posterafbeelding (met tekst er al in verwerkt). -->
-  <section class="slide slide-oktoberfest">
-    <div class="poster-card">
-      <img src="images/oktoberfest-poster.jpg" alt="Peelpush Oktoberfest — za 31 okt, 21:00, De Körref">
-    </div>
-  </section>
-
-  <!-- ============ SLIDE 7 — Volg ons ============ -->
-  <section class="slide slide-social">
-    <h2 class="title">Volg ons:</h2>
-    <div class="social-icons">
-      <div class="social-item">
-        <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="6" fill="url(#ig-grad)"/><rect x="6.5" y="6.5" width="11" height="11" rx="3.5" stroke="white" stroke-width="1.6"/><circle cx="12" cy="12" r="3.2" stroke="white" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.1" fill="white"/><defs><linearGradient id="ig-grad" x1="0" y1="24" x2="24" y2="0"><stop stop-color="#FEE411"/><stop offset=".35" stop-color="#FD5949"/><stop offset=".65" stop-color="#D6249F"/><stop offset="1" stop-color="#285AEB"/></linearGradient></defs></svg>
-        <span>@VC Peelpush</span>
-      </div>
-      <div class="social-item">
-        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#1877F2"/><path d="M14.5 8.4h1.5V5.9h-1.9c-2.1 0-3.3 1.3-3.3 3.4v1.6H8.6v2.6h2.2V19h2.7v-5.5h2l.4-2.6h-2.4V9.6c0-.7.3-1.2 1-1.2z" fill="white"/></svg>
-        <span>@Peelpush Volleybalvereniging</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ SLIDE 8 — Uitslagen (RSS, automatisch) ============ -->
-  <section class="slide slide-feed">
-    <div class="head">
-      <h2 class="title">Uitslagen</h2>
-      <span class="club">VC Peelpush</span>
-    </div>
-    <div class="feed-list" id="uitslagen-list">
-      <p class="feed-empty">Uitslagen laden…</p>
->>>>>>> bd6b6394e48cc737ad87ac8c7dc83bc443e6e530
     </div>
   </section>
 
 </div>
 
 <script>
-<<<<<<< HEAD
 const SLIDE_DURATION_MS=5000;
 const slides=document.querySelectorAll('.slide');
 const progressEl=document.getElementById('progress');
@@ -414,180 +323,6 @@ setInterval(()=>{
   currentSlide=(currentSlide+1)%slides.length;
   showSlide(currentSlide);
 },SLIDE_DURATION_MS);
-=======
-/* ================================================================
-   INSTELLINGEN
-   ================================================================ */
-const SLIDE_DURATION_MS   = 10000;                 // 10 seconden per pagina
-const PROGRAMMA_RSS_URL   = 'https://api.nevobo.nl/export/vereniging/CKM0K9W/programma.rss';
-const UITSLAGEN_RSS_URL   = 'https://api.nevobo.nl/export/vereniging/CKM0K9W/resultaten.rss';
-const FEED_REFRESH_MS     = 15 * 60 * 1000;        // ververs elke 15 min
-const MAX_FEED_ITEMS      = 6;
-const FETCH_TIMEOUT_MS    = 7000;
-
-/* ================================================================
-   SLIDESHOW + voortgangsbalk
-   ================================================================ */
-const slides = document.querySelectorAll('.slide');
-const progressEl = document.getElementById('progress');
-let currentSlide = 0;
-
-function runProgressBar(){
-  progressEl.classList.remove('run');
-  progressEl.style.width = '0%';
-  void progressEl.offsetWidth; // forceer reflow zodat de animatie herstart
-  progressEl.classList.add('run');
-  progressEl.style.transitionDuration = SLIDE_DURATION_MS + 'ms';
-  progressEl.style.width = '100%';
-}
-
-function showSlide(i){
-  slides.forEach(s => s.classList.remove('active'));
-  slides[i].classList.add('active');
-  runProgressBar();
-}
-
-showSlide(0);
-setInterval(() => {
-  currentSlide = (currentSlide + 1) % slides.length;
-  showSlide(currentSlide);
-}, SLIDE_DURATION_MS);
-
-/* ================================================================
-   RSS-FEEDS: programma & uitslagen
-   De Nevobo-feeds zijn oorspronkelijk bedoeld voor server-side
-   gebruik (PHP) en sturen waarschijnlijk geen CORS-headers mee.
-   Daarom proberen we hieronder eerst rechtstreeks, en anders via
-   een paar verschillende publieke CORS-proxy's op rij.
-   ================================================================ */
-const FETCH_STRATEGIES = [
-  url => ({
-    format: 'json',
-    url: 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(url)
-  }),
-  url => ({ format: 'xml', url }),
-  url => ({
-    format: 'xml',
-    url: 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url)
-  }),
-  url => ({
-    format: 'xml',
-    url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url)
-  }),
-];
-
-function fetchWithTimeout(url, ms){
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), ms);
-  return fetch(url, { cache:'no-store', signal: controller.signal }).finally(() => clearTimeout(timer));
-}
-
-async function fetchFeed(url){
-  let lastError = null;
-  for(const strategy of FETCH_STRATEGIES){
-    const target = strategy(url);
-    try{
-      const res = await fetchWithTimeout(target.url, FETCH_TIMEOUT_MS);
-      if(!res.ok) throw new Error('HTTP ' + res.status);
-      const text = await res.text();
-      if(!text || text.length < 20) throw new Error('Leeg antwoord');
-      if(target.format === 'json'){
-        const json = JSON.parse(text);
-        if(json.status !== 'ok' || !json.feed || !Array.isArray(json.items)){
-          throw new Error('Ongeldig RSS-antwoord');
-        }
-        return { format: 'json', items: json.items };
-      }
-      return { format: 'xml', text };
-    }catch(err){
-      lastError = err;
-    }
-  }
-  throw lastError || new Error('Alle pogingen om de feed op te halen zijn mislukt');
-}
-
-function firstText(item, selectors){
-  for(const sel of selectors){
-    let node = null;
-    try{ node = item.querySelector(sel); }catch(e){ /* ongeldige selector overslaan */ }
-    if(node && node.textContent && node.textContent.trim()) return node.textContent.trim();
-  }
-  return '';
-}
-
-function parseFeed(feed){
-  if(feed.format === 'json'){
-    return feed.items.map(item => ({
-      title: item.title || '',
-      description: (item.description || '').replace(/<[^>]+>/g, '').trim(),
-      pubDate: item.pubDate || item.pubdate || ''
-    }));
-  }
-  const xmlText = feed.text;
-  const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-  if(doc.querySelector('parsererror')) throw new Error('Kon de feed niet lezen (ongeldige XML)');
-  // Ondersteunt zowel RSS 2.0 (<item>) als Atom (<entry>)
-  const nodes = Array.from(doc.querySelectorAll('item, entry'));
-  return nodes.map(item => ({
-    title:       firstText(item, ['title']),
-    description: firstText(item, ['description', 'summary', 'content']).replace(/<[^>]+>/g, '').trim(),
-    pubDate:     firstText(item, ['pubDate', 'published', 'updated'])
-  }));
-}
-
-function formatDate(pubDateStr){
-  const d = new Date(pubDateStr);
-  if(isNaN(d)) return pubDateStr;
-  const datum = d.toLocaleDateString('nl-NL', { weekday:'short', day:'numeric', month:'short' });
-  const tijd  = d.toLocaleTimeString('nl-NL', { hour:'2-digit', minute:'2-digit' });
-  return `${datum} · ${tijd}`;
-}
-
-function escapeHtml(str){
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-function renderFeed(containerId, items, emptyMessage){
-  const el = document.getElementById(containerId);
-  if(!items.length){
-    el.innerHTML = `<p class="feed-empty">${emptyMessage}</p>`;
-    return;
-  }
-  el.innerHTML = items.slice(0, MAX_FEED_ITEMS).map(it => `
-    <div class="feed-row">
-      <div class="feed-date">${it.pubDate ? formatDate(it.pubDate) : ''}</div>
-      <div>
-        <div class="feed-title">${escapeHtml(it.title)}</div>
-        ${it.description ? `<div class="feed-desc">${escapeHtml(it.description)}</div>` : ''}
-      </div>
-    </div>
-  `).join('');
-}
-
-async function loadFeed(url, containerId, emptyMessage, errorMessage){
-  try{
-    const items = parseFeed(await fetchFeed(url));
-    renderFeed(containerId, items, emptyMessage);
-  }catch(err){
-    console.error(containerId, 'laden mislukt:', err);
-    document.getElementById(containerId).innerHTML = `<p class="feed-empty">${errorMessage}</p>`;
-  }
-}
-
-function loadProgramma(){
-  loadFeed(PROGRAMMA_RSS_URL, 'programma-list', 'Geen aankomende wedstrijden gevonden.', 'Programma kon tijdelijk niet geladen worden.');
-}
-function loadUitslagen(){
-  loadFeed(UITSLAGEN_RSS_URL, 'uitslagen-list', 'Geen recente uitslagen gevonden.', 'Uitslagen konden tijdelijk niet geladen worden.');
-}
-
-loadProgramma();
-loadUitslagen();
-setInterval(loadProgramma, FEED_REFRESH_MS);
-setInterval(loadUitslagen, FEED_REFRESH_MS);
->>>>>>> bd6b6394e48cc737ad87ac8c7dc83bc443e6e530
 </script>
 </body>
 </html>
