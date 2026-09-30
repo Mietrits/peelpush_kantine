@@ -1,0 +1,39 @@
+VC PEELPUSH — KANTINESCHERM
+============================
+
+INHOUD
+  index.html       de slideshow zelf, open dit bestand in een browser
+  images/          alle foto's en logo's die op het scherm te zien zijn
+
+FOTO VERVANGEN
+  Zet een nieuw bestand in de map "images" met PRECIES dezelfde
+  bestandsnaam als het bestand dat je wilt vervangen, bijvoorbeeld:
+    images/speler-van-de-maand.png
+    images/mars.png
+    images/aa-drink.png
+    images/oktoberfest-poster.jpg
+  De site gebruikt 'm dan meteen — je hoeft niets in de HTML aan te
+  passen.
+
+TEKST VERANDEREN
+  Open index.html in een teksteditor (bijv. Kladblok, VS Code of
+  TextEdit). Zoek de tekst die je wilt aanpassen op (gebruik Ctrl+F /
+  Cmd+F) en typ je eigen tekst erover heen.
+
+EEN PAGINA KOPIËREN OF TOEVOEGEN
+  In index.html bestaat elke pagina uit een blok dat begint met
+  <section class="slide ..."> en eindigt met </section>. Kopieer een
+  bestaand blok, plak het ergens tussen de andere pagina's, en pas de
+  tekst/afbeelding aan. De pagina verschijnt vanzelf mee in de
+  rotatie — er hoeft verder niets aangepast te worden.
+
+WISSELTIJD AANPASSEN
+  Zoek in index.html naar "SLIDE_DURATION_MS" (helemaal onderaan) en
+  verander het getal (in milliseconden, dus 10000 = 10 seconden).
+
+PROGRAMMA / UITSLAGEN LADEN NIET
+  De pagina haalt de Nevobo-feeds automatisch op via een CORS-compatibele
+  RSS-adapter en werkt ook wanneer index.html rechtstreeks wordt geopend.
+  Als de feed tijdelijk niet bereikbaar is, verschijnt er een korte
+  melding in de betreffende slide. Controleer dan de internetverbinding
+  en probeer het scherm later opnieuw.
