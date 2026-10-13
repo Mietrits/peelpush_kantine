@@ -197,7 +197,7 @@ Automatisch geladen. Normaal hoef je hier niets aan te passen.
 <section class="slide slide-results">
 <div class="results-head">
 <h2 class="title">Uitslagen</h2>
-<div class="results-club">LIVE</div>
+<div class="results-club" id="uitslagen-status" aria-live="polite">UITSLAGEN LADEN…</div>
 </div>
 <div class="feed-list" id="uitslagen-list"><p class="feed-empty">Uitslagen laden…</p></div>
 </section>
@@ -209,7 +209,7 @@ Dit is bewust een apart sjabloon zodat sponsoracties makkelijk
 gewisseld kunnen worden.
 ============================================================ -->
 <section class="slide slide-sponsor">
-<div class="sponsor-label">SPONSOREVENEMENT</div>
+<div class="sponsor-label">SPONSOR</div>
 <img class="sponsor-logo" src="images/lindeboom_logo.png" alt="Lindeboom">
 <h2 class="title sponsor-title">Lindeboom — 't Bier van Hier</h2>
 <div class="small-note">Samen met onze sponsor maken we er iets moois van.</div>
@@ -279,8 +279,9 @@ INSTELLINGEN
 const SLIDE_DURATION_MS=5000;
 const UITSLAGEN_RSS_URL='https://api.nevobo.nl/export/vereniging/CKM0K9W/resultaten.rss';
 const FEED_REFRESH_MS=15*60*1000;
-const MAX_FEED_ITEMS=8;
-const FETCH_TIMEOUT_MS=7000;
+const FETCH_TIMEOUT_MS=6000;
+// Vul dit in met de URL van je eigen proxy (zie cloudflare-worker.js) voor de meest betrouwbare oplossing.
+const NEVOBO_PROXY_URL='';
 
 /* ================================================================
 SLIDESHOW
@@ -309,62 +310,89 @@ showSlide(currentSlide);
 /* ================================================================
 NEVOBO RSS — uitslagen
 ================================================================ */
-const FETCH_STRATEGIES=[
-url=>({format:'xml',url}),
-url=>({format:'xml',url:'https://api.allorigins.win/raw?url='+encodeURIComponent(url)}),
-url=>({format:'xml',url:'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(url)})
+const FEED_SOURCES=[
+...(NEVOBO_PROXY_URL.trim()?[{name:'eigen proxy',url:()=>NEVOBO_PROXY_URL.trim()}]:[]),
+{name:'cors.dev',url:url=>'https://proxy.cors.dev/'+url},
+{name:'AllOrigins',url:url=>'https://api.allorigins.win/raw?url='+encodeURIComponent(url)},
+{name:'CodeTabs',url:url=>'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(url)},
+{name:'Nevobo rechtstreeks',url:url=>url}
 ];
-function fetchWithTimeout(url,ms){
-const controller=new AbortController();
-const timer=setTimeout(()=>controller.abort(),ms);
-return fetch(url,{cache:'no-store',signal:controller.signal}).finally(()=>clearTimeout(timer));
+const resultsEl=document.getElementById('uitslagen-list');
+const statusEl=document.getElementById('uitslagen-status');
+let hasLoadedResults=false;
+
+function parseXml(xmlText){
+const doc=new DOMParser().parseFromString(xmlText,'application/xml');
+const root=doc.documentElement?.localName?.toLowerCase();
+if(doc.querySelector('parsererror')||!['rss','feed'].includes(root)){
+throw new Error('Antwoord bevat geen geldige RSS/Atom-feed');
 }
+return doc;
+}
+
 async function fetchFeed(url){
-let lastError=null;
-for(const strategy of FETCH_STRATEGIES){
-const target=strategy(url);
+const errors=[];
+for(const source of FEED_SOURCES){
+const controller=new AbortController();
+const timeout=setTimeout(()=>controller.abort(),FETCH_TIMEOUT_MS);
 try{
-const res=await fetchWithTimeout(target.url,FETCH_TIMEOUT_MS);
-if(!res.ok)throw new Error('HTTP '+res.status);
-const text=await res.text();
-if(!text||text.length<20)throw new Error('Leeg antwoord');
-const doc=new DOMParser().parseFromString(text,'text/xml');
-if(doc.querySelector('parsererror')||!doc.querySelector('rss,feed'))throw new Error('Ongeldige RSS-feed');
-return{format:'xml',text};
-}catch(err){lastError=err}
+const response=await fetch(source.url(url),{
+cache:'no-store',
+credentials:'omit',
+signal:controller.signal
+});
+if(!response.ok)throw new Error(`HTTP ${response.status}`);
+const xmlText=await response.text();
+if(!xmlText.trim())throw new Error('Leeg antwoord');
+return{doc:parseXml(xmlText),source:source.name};
+}catch(error){
+const reason=error.name==='AbortError'?'time-out':error.message||'netwerkfout';
+errors.push(`${source.name}: ${reason}`);
+}finally{
+clearTimeout(timeout);
 }
-throw lastError||new Error('Alle feedpogingen mislukt');
 }
-function firstText(item,selectors){
-for(const sel of selectors){
-let node=null;
-try{node=item.querySelector(sel)}catch(e){}
-if(node&&node.textContent&&node.textContent.trim())return node.textContent.trim();
+throw new Error('Geen geldige Nevobo-feed ontvangen. '+errors.join(' | '));
+}
+
+function childText(element,names){
+for(const name of names){
+const child=Array.from(element.children).find(node=>node.localName?.toLowerCase()===name);
+if(child?.textContent?.trim())return child.textContent.trim();
 }
 return'';
 }
-function parseFeed(feed){
-const doc=new DOMParser().parseFromString(feed.text,'text/xml');
-if(doc.querySelector('parsererror'))throw new Error('Ongeldige XML');
-return Array.from(doc.querySelectorAll('item,entry')).map(item=>({
-title:firstText(item,['title']),
-description:firstText(item,['description','summary','content']).replace(/<[^>]+>/g,'').trim(),
-pubDate:firstText(item,['pubDate','published','updated'])
+
+function plainText(value){
+const parsed=new DOMParser().parseFromString(value,'text/html');
+return(parsed.body.textContent||value).replace(/\s+/g,' ').trim();
+}
+
+function parseFeed(doc){
+return Array.from(doc.getElementsByTagName('*'))
+.filter(node=>['item','entry'].includes(node.localName?.toLowerCase()))
+.map(item=>({
+title:childText(item,['title']),
+description:plainText(childText(item,['description','summary','content'])),
+pubDate:childText(item,['pubdate','published','updated'])
 }));
 }
+
 function formatDate(value){
-const d=new Date(value);
-if(isNaN(d))return value;
-return d.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
+const timestamp=Date.parse(value);
+if(!Number.isFinite(timestamp))return'Datum n.b.';
+return new Date(timestamp).toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
 }
-function escapeHtml(str){
+
+function escapeHtml(value){
 const div=document.createElement('div');
-div.textContent=str;
+div.textContent=String(value??'');
 return div.innerHTML;
 }
+
 function parseMatch(title,description){
-const text=(title||'')+' '+(description||'');
-const match=text.match(/(.+?)\s*-\s*(.+?)(?:,\s*)?Uitslag:\s*(\d+)\s*[-–]\s*(\d+)/i);
+const text=`${title||''} ${description||''}`;
+const match=text.match(/(.+?)\s*-\s*(.+?)(?:,\s*)?\s*Uitslag:\s*(\d+)\s*[-–]\s*(\d+)/i);
 if(!match)return null;
 return{
 home:match[1].trim(),
@@ -373,17 +401,17 @@ homeScore:Number(match[3]),
 awayScore:Number(match[4])
 };
 }
+
 function teamNumber(name){
 const match=name.match(/Peelpush\s+(?:DS|Dames)?\s*([1-8])\b/i)
-|| name.match(/(?:^|\s)(?:DS|Dames)\s*([1-8])\b/i);
+||name.match(/(?:^|\s)(?:DS|Dames)\s*([1-8])\b/i);
 return match?Number(match[1]):null;
 }
+
 function isPeelpushTeam(name,number){
-return /peelpush/i.test(name)&&teamNumber(name)===number;
+return/peelpush/i.test(name)&&teamNumber(name)===number;
 }
-function normaliseTeamName(number){
-return 'Peelpush Dames '+number;
-}
+
 function getLatestDamesResults(items){
 const results={};
 for(const item of items){
@@ -394,27 +422,25 @@ const teamIsHome=isPeelpushTeam(match.home,number);
 const teamIsAway=isPeelpushTeam(match.away,number);
 if(!teamIsHome&&!teamIsAway)continue;
 const currentDate=item.pubDate||'';
+const currentTime=Date.parse(currentDate);
 const existing=results[number];
-const nextResult={
+const existingTime=Date.parse(existing?.date||'');
+if(existing&&(!Number.isFinite(currentTime)||(Number.isFinite(existingTime)&&currentTime<=existingTime)))continue;
+results[number]={
 number,
 date:currentDate,
-team:normaliseTeamName(number),
+team:`Peelpush Dames ${number}`,
 opponent:teamIsHome?match.away:match.home,
-score:teamIsHome
-?`${match.homeScore}–${match.awayScore}`
-:`${match.awayScore}–${match.homeScore}`
+score:teamIsHome?`${match.homeScore}–${match.awayScore}`:`${match.awayScore}–${match.homeScore}`
 };
-if(!existing||new Date(currentDate)>new Date(existing.date||0)){
-results[number]=nextResult;
-}
 }
 }
 return results;
 }
+
 function renderResults(items){
-const el=document.getElementById('uitslagen-list');
 const results=getLatestDamesResults(items);
-el.innerHTML=Array.from({length:8},(_,index)=>{
+resultsEl.innerHTML=Array.from({length:8},(_,index)=>{
 const number=index+1;
 const item=results[number];
 if(!item){
@@ -425,21 +451,29 @@ return `<div class="feed-row">
 </div>`;
 }
 return `<div class="feed-row">
-<div class="feed-date">${item.date?formatDate(item.date):''}</div>
+<div class="feed-date">${escapeHtml(formatDate(item.date))}</div>
 <div class="feed-match"><div class="feed-team">${escapeHtml(item.team)}</div><div class="feed-opponent">vs ${escapeHtml(item.opponent)}</div></div>
 <div class="feed-score">${escapeHtml(item.score)}</div>
 </div>`;
 }).join('');
 }
+
 async function loadResults(){
 try{
-const items=parseFeed(await fetchFeed(UITSLAGEN_RSS_URL));
-renderResults(items);
+const feed=await fetchFeed(UITSLAGEN_RSS_URL);
+renderResults(parseFeed(feed.doc));
+hasLoadedResults=true;
+statusEl.textContent=`BIJGEWERKT ${new Date().toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})}`;
+statusEl.title=`Bron: ${feed.source}`;
 }catch(error){
-console.error('Nevobo uitslagen laden mislukt:',error);
-document.getElementById('uitslagen-list').innerHTML='<p class="feed-empty">Uitslagen konden tijdelijk niet geladen worden.</p>';
+console.error('Nevobo-uitslagen laden mislukt:',error);
+statusEl.textContent=hasLoadedResults?'VERBINDINGSPROBLEEM':'OFFLINE';
+if(!hasLoadedResults){
+resultsEl.innerHTML='<p class="feed-empty">Uitslagen konden niet worden geladen. Controleer de internetverbinding of stel een eigen proxy in.</p>';
 }
 }
+}
+
 loadResults();
 setInterval(loadResults,FEED_REFRESH_MS);
 </script>
