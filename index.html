@@ -132,12 +132,12 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--navy)
 .sponsor-label{color:var(--gold);font-weight:800;text-transform:uppercase;letter-spacing:1.5px;font-size:clamp(.9rem,1.4vw,1.2rem)}
 .sponsor-logo{width:clamp(280px,43vw,650px);max-height:45vh;object-fit:contain;filter:drop-shadow(0 15px 35px rgba(0,0,0,.4))}
 .sponsor-title{font-size:clamp(1.5rem,3vw,2.5rem)}
-/* ACTIEFOTO'S */
+/* ACTIEFOTO'S — kader volgt automatisch de verhouding van de afbeelding */
 .slide-photos{flex-direction:column;align-items:center;justify-content:center;padding:5vh 6vw;gap:2.5rem}
-.photos-title{font-size:clamp(2rem,4vw,3.4rem)}
-.photo-grid{display:flex;align-items:center;justify-content:center;width:min(1100px,88vw);height:66vh}
-.photo-card{position:relative;overflow:hidden;width:min(900px,80vw);height:100%;border-radius:24px;border:2px solid rgba(253,195,0,.55);background:rgba(255,255,255,.05);box-shadow:0 25px 70px rgba(0,0,0,.45)}
-.photo-card img{width:100%;height:100%;object-fit:contain;display:block}
+.photos-title{font-size:clamp(2rem,4vw,3.4rem);max-width:100%;text-align:center}
+.photo-grid{display:flex;align-items:center;justify-content:center;width:auto;height:auto;max-width:88vw;max-height:66vh;min-width:0;min-height:0}
+.photo-card{position:relative;overflow:hidden;width:fit-content;height:fit-content;max-width:88vw;max-height:66vh;border-radius:24px;border:2px solid rgba(253,195,0,.55);background:rgba(255,255,255,.05);box-shadow:0 25px 70px rgba(0,0,0,.45)}
+.photo-card img{display:block;width:auto;height:auto;max-width:calc(88vw - 4px);max-height:calc(66vh - 4px);object-fit:contain}
 .photo-label{position:absolute;left:0;right:0;bottom:0;padding:1.2rem;background:linear-gradient(transparent,rgba(0,0,0,.9));font-weight:800;font-size:clamp(.9rem,1.3vw,1.1rem)}
 /* DIKKE MIK */
 .slide-dikkemik{align-items:center;justify-content:center;text-align:center;padding:5vh 7vw}
@@ -174,7 +174,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--navy)
 .event-copy,.player-copy{max-width:100%}
 .event-poster{height:42vh;max-width:65vw}
 .player-photo{height:43vh;max-width:70vw}
-.photo-grid{height:48vh;gap:.7rem}
+.photo-grid{max-width:88vw;max-height:48vh;gap:.7rem}
+.photo-card{max-width:88vw;max-height:48vh}
+.photo-card img{max-width:calc(88vw - 4px);max-height:calc(48vh - 4px)}
 .cta-bottom{flex-direction:column}
 .social-grid{flex-direction:column;gap:1.5rem}
 }
@@ -247,7 +249,7 @@ gewisseld kunnen worden.
 <div class="sponsor-label">SPONSOR</div>
 <img class="sponsor-logo" src="images/lindeboom_logo.png" alt="Lindeboom">
 <h2 class="title sponsor-title">Lindeboom — 't Bier van Hier</h2>
-<div class="small-note">Samen met onze sponsor maken we er iets moois van.</div>
+<div class="small-note"><!--tekst--></div>
 </section>
 
 <!-- ============================================================
@@ -257,7 +259,7 @@ BEWERKEN: vervang de afbeelding door een actuele actiefoto.
 <section class="slide slide-photos">
 <h2 class="title photos-title">Actie bij Peelpush</h2>
 <div class="photo-grid">
-<div class="photo-card"><img src="images/welkom-speler.png" alt="Actiefoto"><div class="photo-label">Actie bij Peelpush</div></div>
+<div class="photo-card"><img src="images/actiefoto.png" alt="Actiefoto"><div class="photo-label"><!--tekst--></div></div>
 </div>
 </section>
 
@@ -271,7 +273,7 @@ BEWERKEN: tekst en logo. Korting staat duidelijk centraal.
 <div class="dm-small">JARIG?</div>
 <h2 class="title">Vier je verjaardag<br>bij Dikke Mik!</h2>
 <div class="discount">10% KORTING</div>
-<p>Op je verjaardag krijg je bij Dikke Mik 10% korting.</p>
+<p><!--tekst--></p>
 </div>
 </section>
 
@@ -328,7 +330,7 @@ BEWERKEN: accounts/kanalen.
 <div class="social-item"><div class="social-icon instagram">◎</div><span>Instagram</span><div class="social-handle">@VC Peelpush</div></div>
 <div class="social-item"><div class="social-icon facebook">f</div><span>Facebook</span><div class="social-handle">@Peelpush Volleybalvereniging</div></div>
 </div>
-<div class="small-note">Blijf op de hoogte van wedstrijden, evenementen, teams en clubnieuws.</div>
+<div class="small-note"><!--tekst--></div>
 </section>
 
 </div>
@@ -537,10 +539,10 @@ const TARGET_TEAMS=[
 {key:'heren1',label:'Heren 1',side:'heren'},
 {key:'heren2',label:'Heren 2',side:'heren'},
 {key:'heren3',label:'Heren 3',side:'heren'},
+{key:'meidenA1',label:'Meiden A1',side:'jeugd'},
 {key:'meidenB1',label:'Meiden B1',side:'jeugd'},
-{key:'jeugdA1',label:'Jeugd A1',side:'jeugd'},
-{key:'jeugdC1',label:'Jeugd C1',side:'jeugd'},
-{key:'jeugdC2',label:'Jeugd C2',side:'jeugd'}
+{key:'meidenC1',label:'Meiden C1',side:'jeugd'},
+{key:'meidenC2',label:'Meiden C2',side:'jeugd'}
 ];
 
 function identifyTeam(name){
@@ -548,17 +550,10 @@ const value=String(name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').rep
 if(!/peelpush/i.test(value))return null;
 let m=value.match(/\b(?:heren|hs|h)\s*[-.]?\s*0*([1-3])\b/i);
 if(m)return `heren${Number(m[1])}`;
-// Jeugdlabels uit Nevobo kunnen o.a. Meisjes B1, Jongens C2, MB 1 of JC2 zijn.
-m=value.match(/\b(?:meiden|meisjes|mb)\s*[- ]?0*1?\b/i);
-if(m && /\b(?:meiden|meisjes|mb)\s*[- ]?0*1\b/i.test(value))return 'meidenB1';
-const youth=[
-{key:'jeugdA1',re:/\b(?:meisjes|jongens|jeugd|junioren|aspiranten|meiden|jongens|meisjes)?\s*(?:ma|ja|a)\s*[- ]?0*1\b/i},
-{key:'meidenB1',re:/\b(?:meiden|meisjes|mb)\s*[- ]?0*1\b/i},
-{key:'meidenB1',re:/\b(?:jongens|jeugd|junioren|aspiranten|jb|b)\s*[- ]?0*1\b/i},
-{key:'jeugdC1',re:/\b(?:jongens|meisjes|jeugd|junioren|aspiranten|jc|mc|c)\s*[- ]?0*1\b/i},
-{key:'jeugdC2',re:/\b(?:jongens|meisjes|jeugd|junioren|aspiranten|jc|mc|c)\s*[- ]?0*2\b/i}
-];
-for(const item of youth){if(item.re.test(value))return item.key;}
+// Nevobo gebruikt zowel uitgeschreven meiden-/meisjesnamen als codes zoals MA1 en MC 2.
+m=value.match(/\b(?:meiden|meisjes)\s*[- ]?([abc])\s*[- ]?0*([12])\b/i)
+||value.match(/\bM([ABC])\s*[-.]?\s*0*([12])\b/i);
+if(m)return `meiden${m[1].toUpperCase()}${Number(m[2])}`;
 return null;
 }
 
