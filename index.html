@@ -64,6 +64,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--navy)
 .event-copy p{max-width:32rem;color:var(--muted);font-size:clamp(1rem,1.6vw,1.35rem);line-height:1.5}
 .event-details{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2rem}
 .event-details strong{background:var(--gold);color:var(--navy-deep);padding:.7rem 1rem;border-radius:10px;font-size:clamp(.85rem,1.3vw,1.1rem)}
+.event-note{margin-top:1rem;color:var(--muted);font-size:clamp(.8rem,1.15vw,1.05rem);font-weight:600;letter-spacing:.05em;text-transform:uppercase}
 .event-poster{height:82vh;max-width:47%;border:3px solid var(--gold);border-radius:20px;overflow:hidden;box-shadow:0 25px 70px rgba(0,0,0,.5)}
 .event-poster img{width:100%;height:100%;object-fit:cover;display:block}
 /* SPELER */
@@ -205,12 +206,13 @@ BEWERKEN: titel, omschrijving, datum, tijd, locatie en poster.
 ============================================================ -->
 <section class="slide slide-event">
 <div class="event-copy">
-<div class="eyebrow">Ben jij er bij?</div>
-<h2 class="title">Peelpush<br>Oktoberfest</h2>
-<p>Een avond vol gezelligheid, muziek en Peelpush-sfeer.</p>
-<div class="event-details"><strong>ZA 31 OKT</strong><strong>21:00</strong><strong>DE KÖRREF</strong></div>
+<div class="eyebrow">Binnenkort...</div>
+<h2 class="title">Peelpush<br>Cantus</h2>
+<p>Zing jij ook uit volle borst mee?</p>
+<div class="event-details"><strong>ZA 14 NOV</strong><strong>22:00</strong><strong>DE KÖRREF</strong></div>
+<div class="event-note">Aanmelden bij Eefke Schurkens of Sanne Janssen.</div>
 </div>
-<div class="event-poster"><img src="images/oktoberfest-poster.jpg" alt="Peelpush Oktoberfest"></div>
+<div class="event-poster"><img src="images/event-poster.jpeg" alt="Peelpush Cantus"></div>
 </section>
 
 <!-- ============================================================
@@ -312,7 +314,7 @@ QR verwijst naar communicatie@peelpush.nl
 <div class="eyebrow">DOE MEE</div>
 <h2 class="title">Word vrijwilliger!</h2>
 <p>Peelpush kan niet zonder enthousiaste vrijwilligers. Help mee en maak samen met ons de club sterker.</p>
-<div class="cta-points"><span>Communicatie</span><span>Evenementen</span><span>Foto & video</span><span>Organisatie</span></div>
+<div class="cta-points"><span>Communicatie</span><span>Sponsoring</span><span>Foto & video</span><span>Organisatie</span></div>
 <div class="cta-bottom">
 <div class="cta-button">Lijkt dit je leuk? Sluit je aan!</div>
 <div class="qr-wrap">
@@ -459,15 +461,30 @@ return div.innerHTML;
 }
 
 function parseMatch(title,description){
-const text=`${title||''} ${description||''}`;
-const match=text.match(/(.+?)\s*-\s*(.+?)(?:,\s*)?\s*Uitslag:\s*(\d+)\s*[-–]\s*(\d+)/i);
-if(!match)return null;
-return{
-home:match[1].trim(),
-away:match[2].trim(),
-homeScore:Number(match[3]),
-awayScore:Number(match[4])
-};
+ // Gebruik bij voorkeur de titel: titel en description bevatten vaak dezelfde
+ // wedstrijdtekst, waardoor samenvoegen onnodige dubbele tekst oplevert.
+ const text=String(title||description||'').replace(/\s+/g,' ').trim();
+ const match=text.match(/^(.+?)\s*,?\s*Uitslag:\s*(\d+)\s*[-–]\s*(\d+)/i);
+ if(!match)return null;
+
+ const teams=match[1].trim().split(/\s+-\s+/);
+ let home=teams[0]||'';
+ let away=teams.slice(1).join(' - ');
+
+ // Nevobo zet bij teams met een naamsponsor de sponsor vóór de clubnaam:
+ // "Slakas - Peelpush DS 3 - Tegenstander". De eerste twee delen vormen
+ // dus samen de thuisploeg; Slakas is niet de tegenstander.
+ if(teams.length===3 && /\bPeelpush\s+(?:DS|Dames)?\s*[1-8]\b/i.test(teams[1])){
+  home=`${teams[0]} - ${teams[1]}`;
+  away=teams[2];
+ }
+
+ return{
+  home,
+  away,
+  homeScore:Number(match[2]),
+  awayScore:Number(match[3])
+ };
 }
 
 function teamNumber(name){
@@ -499,11 +516,16 @@ for(let number=1;number<=8;number++){
 const homeIsTeam=isPeelpushTeam(match.home,number);
 const awayIsTeam=isPeelpushTeam(match.away,number);
 if(!homeIsTeam&&!awayIsTeam)continue;
+const peelpushName=homeIsTeam?match.home:match.away;
+const sponsorMatch=peelpushName.match(/^(.+?)\s+-\s+(?=Peelpush\b)/i);
+const teamLabel=sponsorMatch
+ ? `${sponsorMatch[1].trim()} Peelpush Dames ${number}`
+ : `Peelpush Dames ${number}`;
 const candidate={
 number,
 index,
 date:item.pubDate||'',
-team:`Peelpush Dames ${number}`,
+team:teamLabel,
 opponent:homeIsTeam?match.away:match.home,
 homeAway:homeIsTeam?'THUIS':'UIT',
 score:homeIsTeam?`${match.homeScore}–${match.awayScore}`:`${match.awayScore}–${match.homeScore}`,
